@@ -1,12 +1,17 @@
 {
     "LocalFolders": [
-        "C:\\LocalFolder\\folder1",
-        "C:\\LocalFolder\\folder2"
+        "C:\\Users\\dev\\Perforce\\Studio_Client04\\depot\\Projects\\TheKeeper\\Config",
+        "C:\\Users\\dev\\Perforce\\Studio_Client04\\depot\\Projects\\TheKeeper\\Content",
+        "C:\\Users\\dev\\Perforce\\Studio_Client04\\depot\\Projects\\TheKeeper\\Plugins",
+        "C:\\Users\\dev\\Perforce\\Studio_Client04\\depot\\Projects\\TheKeeper\\Saved"
     ],
-    "ServerSharedRoot": "\\Share\\here",
+    "LocalRoot": "TheKeeper",
+    "LocalFiles": [
+        "C:\\Users\\dev\\Perforce\\Studio_Client04\\depot\\Projects\\TheKeeper\\TheKeeper.uproject"
+    ],
+    "ServerSharedRoot": "\\HXRShare",
     "Servers": [
-        "192.168.1.1",
-        "192.168.1.2",
-        "192.168.1.3"
+        "192.168.0.107",
+        "192.168.0.108"
     ]
 }

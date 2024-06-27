@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 class Program
@@ -12,12 +13,28 @@ class Program
         {
             var config = JsonSerializer.Deserialize<Config>(File.ReadAllText(configPath));
 
-            foreach (var localFolder in config.LocalFolders)
+            foreach (var serverIP in config!.Servers)
             {
-                foreach (var serverIP in config.Servers)
+                var fileDestination = $"\\\\{serverIP}{config.ServerSharedRoot}";
+
+                foreach (var localFile in config.LocalFiles)
                 {
+                    var file = new DirectoryInfo(localFile);
+                    var source = new DirectoryInfo(file!.Parent!.ToString());
+                    var sourceFolder = source.ToString();
+                    var destinationFolder = source.Name == config.LocalRoot ? "" : source.Name;
+                    var destination = $"\\\\{serverIP}{config.ServerSharedRoot}\\{destinationFolder}";
+
+                    SynchronizeFile(sourceFolder, destination, file.Name);
+
+                }
+
+                foreach (var localFolder in config.LocalFolders)
+                {
+
                     var destination = $"\\\\{serverIP}{config.ServerSharedRoot}\\{new DirectoryInfo(localFolder).Name}";
                     SynchronizeFolder(localFolder, destination);
+
                 }
             }
 
@@ -45,7 +62,35 @@ class Program
         };
 
         var process = Process.Start(startInfo);
-        process.WaitForExit();
+
+
+        var output = process.StandardOutput.ReadToEnd();
+        var errors = process.StandardError.ReadToEnd();
+
+        if (!string.IsNullOrEmpty(errors))
+        {
+            Console.WriteLine($"Errors during sync: {errors}");
+        }
+
+        Console.WriteLine(output);
+    }
+
+    static void SynchronizeFile(string source, string destination, string filename)
+    {
+        Console.WriteLine($"Syncing {source} to {destination}");
+
+        var startInfo = new ProcessStartInfo()
+        {
+            FileName = "robocopy",
+            Arguments = $"{source} {destination} {filename}  /Z /R:5 /W:5",
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true
+        };
+
+        var process = Process.Start(startInfo);
+
 
         var output = process.StandardOutput.ReadToEnd();
         var errors = process.StandardError.ReadToEnd();
@@ -62,6 +107,8 @@ class Program
 class Config
 {
     public string[] LocalFolders { get; set; }
+    public string LocalRoot { get; set; }
+    public string[] LocalFiles { get; set; }
     public string ServerSharedRoot { get; set; }
     public string[] Servers { get; set; }
 }
