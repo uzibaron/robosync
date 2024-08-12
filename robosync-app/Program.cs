@@ -26,15 +26,12 @@ class Program
                     var destination = $"\\\\{serverIP}{config.ServerSharedRoot}\\{destinationFolder}";
 
                     SynchronizeFile(sourceFolder, destination, file.Name);
-
                 }
 
                 foreach (var localFolder in config.LocalFolders)
                 {
-
                     var destination = $"\\\\{serverIP}{config.ServerSharedRoot}\\{new DirectoryInfo(localFolder).Name}";
                     SynchronizeFolder(localFolder, destination);
-
                 }
             }
 
@@ -54,7 +51,7 @@ class Program
         var startInfo = new ProcessStartInfo()
         {
             FileName = "robocopy",
-            Arguments = $"{source} {destination} /MIR /Z /R:5 /W:5",
+            Arguments = $"{source} {destination} /MIR /Z /R:5 /W:5 /a-:R",
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
@@ -62,8 +59,7 @@ class Program
         };
 
         var process = Process.Start(startInfo);
-
-
+        
         var output = process.StandardOutput.ReadToEnd();
         var errors = process.StandardError.ReadToEnd();
 
@@ -82,7 +78,7 @@ class Program
         var startInfo = new ProcessStartInfo()
         {
             FileName = "robocopy",
-            Arguments = $"{source} {destination} {filename}  /Z /R:5 /W:5",
+            Arguments = $"{source} {destination} {filename} /Z /R:5 /W:5 /a-:R",
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
@@ -90,8 +86,7 @@ class Program
         };
 
         var process = Process.Start(startInfo);
-
-
+        
         var output = process.StandardOutput.ReadToEnd();
         var errors = process.StandardError.ReadToEnd();
 
